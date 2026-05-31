@@ -1,62 +1,184 @@
-# 1. Print your username, hostname, and current directory
-#    all in one go using a single line
+# Linux Basics - Day 01
+
+## 1. Print Username, Hostname, and Current Directory
+
+```bash
 echo "User: $(whoami) | Machine: $(hostname) | Location: $(pwd)"
+```
 
-# 2. Create this exact folder structure in one command
-#    day01/
-#    ├── notes/
-#    ├── scripts/
-#    └── practice/
+---
+
+## 2. Create Folder Structure
+
+Create the following structure:
+
+```text
+day01/
+├── notes/
+├── scripts/
+└── practice/
+```
+
+Command:
+
+```bash
 mkdir -p day01/{notes,scripts,practice}
+```
 
-# 3. Create a file called myinfo.txt inside day01/notes/
-#    and write your name and today's date into it — without
-#    opening any editor
+---
+
+## 3. Create `myinfo.txt`
+
+Create a file containing your name and today's date:
+
+```bash
 echo "Name: Anand" > day01/notes/myinfo.txt
 echo "Date: $(date)" >> day01/notes/myinfo.txt
+```
 
-# 4. Prove the file has content
+---
+
+## 4. Verify File Contents
+
+```bash
 cat day01/notes/myinfo.txt
+```
 
-# 5. Copy myinfo.txt into the practice folder
-#    then rename it to backup.txt
+---
+
+## 5. Copy and Rename the File
+
+Copy `myinfo.txt` to the practice folder and rename it to `backup.txt`.
+
+```bash
 cp day01/notes/myinfo.txt day01/practice/backup.txt
+```
 
-# 6. List all files in day01/ including subfolders
-#    in one command
+---
+
+## 6. List All Files Including Subfolders
+
+```bash
 ls -R day01
+```
 
-# 7. Find out how many lines are in backup.txt
- cat day01/notes/myinfo.txt |wc  
+Alternative:
 
-# 8. Add a third line to backup.txt that says
-#    "This is my backup file"
-#    without overwriting what's already there
+```bash
+find day01 -type f
+```
 
-echo "This is my backup" >> day01/practice/backup.txt 
+---
 
-Key point:
+## 7. Count Lines in `backup.txt`
 
-> = overwrite file
->> = append to file (keep existing content) 
+```bash
+wc -l day01/practice/backup.txt
+```
 
+Or:
 
-# 9. Create a file called secret.txt in day01/
+```bash
+cat day01/practice/backup.txt | wc -l
+```
+
+---
+
+## 8. Append a Third Line
+
+Add the text without overwriting existing content:
+
+```bash
+echo "This is my backup file" >> day01/practice/backup.txt
+```
+
+### Redirection Operators
+
+| Operator | Description    |
+| -------- | -------------- |
+| `>`      | Overwrite file |
+| `>>`     | Append to file |
+
+---
+
+## 9. Create `secret.txt`
+
+```bash
 touch day01/secret.txt
+```
 
-# 10. Make it so ONLY you can read and write it
-#     nobody else can do anything with it
+---
+
+## 10. Restrict Permissions
+
+Allow only the owner to read and write:
+
+```bash
 chmod 600 day01/secret.txt
+```
 
-# 11. Check the permission string looks right
+Permission meaning:
+
+```text
+-rw-------
+```
+
+---
+
+## 11. Verify Permissions
+
+```bash
 ls -l day01/secret.txt
-# should show: -rw-------
+```
 
-# 12. Now create a file called script.sh
-#     and give it execute permission for everyone
+Expected output:
+
+```text
+-rw-------
+```
+
+---
+
+## 12. Create `script.sh`
+
+```bash
 touch day01/script.sh
-# your command here...
+```
 
-# 13. Check it
+Give execute permission to everyone:
+
+```bash
+chmod 755 day01/script.sh
+```
+
+---
+
+## 13. Verify Script Permissions
+
+```bash
 ls -l day01/script.sh
-# should show: -rwxr-xr-x
+```
+
+Expected output:
+
+```text
+-rwxr-xr-x
+```
+
+### Permission Breakdown
+
+| Permission | Meaning |
+| ---------- | ------- |
+| `r`        | Read    |
+| `w`        | Write   |
+| `x`        | Execute |
+
+Example:
+
+```text
+-rwxr-xr-x
+```
+
+* Owner: Read, Write, Execute
+* Group: Read, Execute
+* Others: Read, Execute
