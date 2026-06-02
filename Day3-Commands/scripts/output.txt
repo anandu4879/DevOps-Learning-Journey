@@ -1,0 +1,24 @@
+File Type:
+sample.log: ASCII text
+
+Total Line Count:
+      11
+
+First 5 Lines:
+Server started
+Database connected
+Login successful
+Network error
+Disk warning
+
+Last 5 Lines:
+User login
+Application started
+Database error
+Memory warning
+System shutdown
+
+Enter a search word: 
+Matching Lines:
+Network error
+Database error

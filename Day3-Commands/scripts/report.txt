@@ -1,0 +1,9 @@
+Log Report
+------------
+Total lines:
+      11
+
+Search term: error
+Matching lines:
+4:Network error
+9:Database error
