@@ -414,11 +414,3 @@ Saves results to a dated log file.
 | Port check | `nc -zv host port` | `nc -zv host port` (same) |
 
 ---
-
-## KodeKloud
-- Networking Basics Lab ✅
-
-## Tomorrow — Day 07
-End of week 1 — review everything and build a project that
-uses shell scripting, permissions, processes, and networking
-together in one real script.
