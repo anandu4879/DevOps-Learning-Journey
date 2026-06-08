@@ -1,0 +1,228 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# ==================================================
+# Defaults
+# ==================================================
+APP=""
+ENV=""
+BRANCH="main"
+VERBOSE=false
+
+START_TIME=$SECONDS
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+LOGFILE="/tmp/deploy_${TIMESTAMP}.log"
+LOCKFILE="/tmp/deploy.lock"
+
+BACKUP_DIR=""
+
+# ==================================================
+# Logging
+# ==================================================
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOGFILE"
+}
+
+# ==================================================
+# Usage
+# ==================================================
+usage() {
+    cat <<EOF
+Usage: $0 -a <app> -e <environment> [-b branch] [-v]
+
+Required:
+  -a  Application name
+  -e  Environment (dev|staging|production)
+
+Optional:
+  -b  Git branch (default: main)
+  -v  Verbose mode
+  -h  Help
+EOF
+    exit 1
+}
+
+# ==================================================
+# Restore Function
+# ==================================================
+restore_backup() {
+    if [[ -n "${BACKUP_DIR:-}" && -d "$BACKUP_DIR" ]]; then
+        log "Restoring application from backup..."
+
+        rm -rf "/tmp/$APP"
+
+        cp -r "$BACKUP_DIR/$APP" "/tmp/" 2>/dev/null || true
+
+        log "Restore completed"
+    fi
+}
+
+# ==================================================
+# Cleanup
+# ==================================================
+cleanup() {
+    rm -f "$LOCKFILE"
+    log "Cleanup completed"
+}
+
+# ==================================================
+# Error Handler
+# ==================================================
+on_error() {
+    local line=$1
+
+    log "ERROR: Deployment failed on line $line"
+
+    restore_backup
+
+    cleanup
+
+    exit 1
+}
+
+trap cleanup EXIT
+trap 'on_error $LINENO' ERR
+
+# ==================================================
+# Parse Arguments
+# ==================================================
+while getopts "a:e:b:vh" opt; do
+    case $opt in
+        a) APP="$OPTARG" ;;
+        e) ENV="$OPTARG" ;;
+        b) BRANCH="$OPTARG" ;;
+        v) VERBOSE=true ;;
+        h) usage ;;
+        *) usage ;;
+    esac
+done
+
+# ==================================================
+# Validation
+# ==================================================
+[[ -z "$APP" ]] && {
+    echo "Error: app required"
+    usage
+}
+
+[[ -z "$ENV" ]] && {
+    echo "Error: environment required"
+    usage
+}
+
+case "$ENV" in
+    dev|staging|production)
+        ;;
+    *)
+        echo "Invalid environment"
+        exit 1
+        ;;
+esac
+
+# ==================================================
+# Lock File
+# ==================================================
+if [[ -f "$LOCKFILE" ]]; then
+    log "Another deployment is already running"
+    exit 1
+fi
+
+touch "$LOCKFILE"
+
+# ==================================================
+# Safety Checks
+# ==================================================
+log "Running pre-deployment checks"
+
+command -v git >/dev/null 2>&1 || {
+    log "Git not installed"
+    exit 1
+}
+
+APP_DIR="/tmp/$APP"
+
+[[ -d "$APP_DIR" ]] || {
+    log "Application directory does not exist: $APP_DIR"
+    exit 1
+}
+
+[[ -r "$APP_DIR" ]] || {
+    log "Application directory is not readable"
+    exit 1
+}
+
+log "Pre-checks passed"
+
+# ==================================================
+# Backup
+# ==================================================
+BACKUP_DIR="/tmp/backups/${APP}_${TIMESTAMP}"
+
+mkdir -p "$BACKUP_DIR"
+
+log "Creating backup"
+
+cp -r "$APP_DIR" "$BACKUP_DIR/"
+
+log "Backup stored at $BACKUP_DIR"
+
+# ==================================================
+# Deployment Function
+# ==================================================
+run_step() {
+
+    local STEP="$1"
+
+    log "START: $STEP"
+
+    sleep 2
+
+    log "FINISH: $STEP"
+}
+
+# ==================================================
+# Deployment
+# ==================================================
+log "Deployment started"
+
+run_step "Pulling branch $BRANCH from git"
+
+# Simulated git pull
+$VERBOSE && log "git pull origin $BRANCH"
+
+run_step "Installing dependencies"
+
+$VERBOSE && log "npm install"
+
+run_step "Running tests"
+
+$VERBOSE && log "Executing test suite"
+
+# Uncomment to simulate failure
+# false
+
+run_step "Restarting service"
+
+$VERBOSE && log "systemctl restart ${APP}"
+
+# ==================================================
+# Success Summary
+# ==================================================
+DURATION=$((SECONDS - START_TIME))
+
+echo
+echo "======================================="
+echo " DEPLOYMENT SUCCESSFUL"
+echo "======================================="
+echo "Application : $APP"
+echo "Environment : $ENV"
+echo "Branch      : $BRANCH"
+echo "Deployed At : $(date)"
+echo "Backup      : $BACKUP_DIR"
+echo "Duration    : ${DURATION} seconds"
+echo "Log File    : $LOGFILE"
+echo "======================================="
+
+log "Deployment completed successfully"
