@@ -196,11 +196,3 @@ That's genuine understanding — not just knowing commands, but knowing
 how they fit together in real work.
 
 ---
-
-## Next Week Preview
-
-Week 3 is System Administration territory. Users, groups, permissions deep.
-Systemd services, cron jobs, logging, firewall. The "making servers work"
-stuff. This is where you start feeling like a real sysadmin.
-
----
