@@ -1,3 +1,5 @@
 [0;34m[INFO][0m Setting up server for production environment
 [0;34m[INFO][0m Hostname: web-server-01
 [0;34m[INFO][0m Updating system...
+[0;34m[INFO][0m Saving log to ./serversetup_20260614_132901.log
+Setup completed at Mon Jun 22 17:46:31 IST 2026
