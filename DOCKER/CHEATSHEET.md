@@ -38,3 +38,45 @@ docker history <image>      # image layers
 docker rm $(docker ps -aq)                    # remove all stopped
 docker rmi $(docker images -q)                # remove all images
 docker system prune                          # cleanup everything
+
+
+# Docker Compose Cheat Sheet
+
+## Volumes
+docker volume create my-data
+docker volume ls
+docker volume rm my-data
+docker volume inspect my-data
+
+## Networks
+docker network create app-net
+docker network ls
+docker network inspect app-net
+
+## Docker Compose
+docker-compose up              # start
+docker-compose up -d           # background
+docker-compose down            # stop/remove
+docker-compose ps              # status
+docker-compose logs            # logs
+docker-compose logs -f web     # follow
+docker-compose exec db psql    # run command
+
+## Volumes in Compose
+volumes:
+  postgres-data:              # named volume
+
+services:
+  db:
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+## Networks in Compose
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  web:
+    networks:
+      - app-network
